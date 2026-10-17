@@ -1,0 +1,19 @@
+# Оточнення
+.venv/
+venv/
+
+# Кеш Python
+__pycache__/
+*.py[cod]
+
+# Секрети і локальні дані
+.env
+db.sqlite3
+
+# Завантажені файли та статика
+media/
+staticfiles/
+
+# Налаштування редакторів
+.idea/
+.vscode/
