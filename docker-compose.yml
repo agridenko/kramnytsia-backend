@@ -1,0 +1,32 @@
+services:
+  # Сервіс бази даних
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432" # Щоб можна було підключитися з хост-машини (наприклад, через DBeaver)
+
+  # Сервіс нашого Django-проєкту
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app # Монтуємо поточну папку в контейнер (для hot-reload при розробці)
+      - media_volume:/app/media # для медіафайлів
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db # Запускати web тільки після того, як db готовий
+
+volumes:
+  postgres_data: # Персистентне сховище для БД (дані не зникнуть при перезапуску)
+  media_volume:  # Персистентне сховище для завантажених картинок
