@@ -218,6 +218,11 @@ CACHES = {
 }
 
 
+LIQPAY_PUBLIC_KEY = env('LIQPAY_PUBLIC_KEY', default='')
+LIQPAY_PRIVATE_KEY = env('LIQPAY_PRIVATE_KEY', default='')
+LIQPAY_SANDBOX = env.bool('LIQPAY_SANDBOX', default=True)
+
+
 #Функція для сортування меню адмін панелі
 def custom_get_app_list(self, request, app_label=None):
     """Фронтенд-сортування меню адмін панелі"""
