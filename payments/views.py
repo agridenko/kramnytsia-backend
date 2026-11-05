@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 
 from orders.models import Order
+from orders.tasks import send_order_confirmation_email
 from .models import Payment
 from .serializers import CreatePaymentRequestSerializer, LiqPayCallbackSerializer
 from .services import create_payment, verify_callback
@@ -144,6 +145,10 @@ class LiqPayCallbackView(APIView):
             if payment_status == "success":
                 payment.status = Payment.Status.SUCCESS
                 payment.order.status = Order.Status.PAID
+
+                # Викликаємо фонову задачу для відправки email підтвердження
+                send_order_confirmation_email.delay(payment.order.id)
+
             elif payment_status in ["error", "failure"]:
                 payment.status = Payment.Status.FAILURE
             elif payment_status == "wait_accept":

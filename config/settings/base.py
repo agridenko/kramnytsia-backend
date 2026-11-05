@@ -224,6 +224,14 @@ LIQPAY_PRIVATE_KEY = env('LIQPAY_PRIVATE_KEY', default='')
 LIQPAY_SANDBOX = env.bool('LIQPAY_SANDBOX', default=True)
 
 
+# Налаштування Celery
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://redis:6379/0')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://redis:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Kyiv'
+
+
 #Функція для сортування меню адмін панелі
 def custom_get_app_list(self, request, app_label=None):
     """Фронтенд-сортування меню адмін панелі"""
