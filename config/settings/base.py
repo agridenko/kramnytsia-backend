@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "cart",
     "orders",
     "delivery",
+    "payments",
 ]
 
 MIDDLEWARE = [
@@ -230,7 +231,7 @@ def custom_get_app_list(self, request, app_label=None):
     app_list = list(app_dict.values())
 
     #Сисок моделей, які ми хочемо побачити в блокі "Магазин"
-    shop_model_names = ["Category", "Product", "Cart", "CartItem", "Order", "OrderItem"]
+    shop_model_names = ["Category", "Product", "Cart", "CartItem", "Order", "OrderItem", "Payment"]
     user_model_names = ["User", "Group", ]
 
     shop_models = []

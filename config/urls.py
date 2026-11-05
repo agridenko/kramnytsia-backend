@@ -76,6 +76,15 @@ urlpatterns = [
          )
     ),
 
+    #API оплати
+    path(
+        "api/v1/",
+         include(
+             "payments.urls",
+             namespace="payments"
+         )
+    ),
+
     #Swagger documentations
     path("api/shema/", SpectacularAPIView.as_view(), name="schema"),
     path(
