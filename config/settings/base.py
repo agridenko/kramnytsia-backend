@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "cart",
     "orders",
     "delivery",
+    "payments",
 ]
 
 MIDDLEWARE = [
@@ -218,6 +219,19 @@ CACHES = {
 }
 
 
+LIQPAY_PUBLIC_KEY = env('LIQPAY_PUBLIC_KEY', default='')
+LIQPAY_PRIVATE_KEY = env('LIQPAY_PRIVATE_KEY', default='')
+LIQPAY_SANDBOX = env.bool('LIQPAY_SANDBOX', default=True)
+
+
+# Налаштування Celery
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://redis:6379/0')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://redis:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Kyiv'
+
+
 #Функція для сортування меню адмін панелі
 def custom_get_app_list(self, request, app_label=None):
     """Фронтенд-сортування меню адмін панелі"""
@@ -225,7 +239,7 @@ def custom_get_app_list(self, request, app_label=None):
     app_list = list(app_dict.values())
 
     #Сисок моделей, які ми хочемо побачити в блокі "Магазин"
-    shop_model_names = ["Category", "Product", "Cart", "CartItem", "Order", "OrderItem"]
+    shop_model_names = ["Category", "Product", "Cart", "CartItem", "Order", "OrderItem", "Payment"]
     user_model_names = ["User", "Group", ]
 
     shop_models = []
