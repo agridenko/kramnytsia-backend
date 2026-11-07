@@ -4,6 +4,13 @@ from django.core.cache import cache
 from rest_framework.exceptions import APIException
 
 
+# Тестові дані на випадок, якщо API НП лежить
+MOCK_CITIES = [
+    {"Ref": "8d5a980d-391c-11dd-90d9-001a92567626", "Description": "Київ", "Area": "Київська"},
+    {"Ref": "db5c88d0-391c-11dd-90d9-001a92567626", "Description": "Львів", "Area": "Львівська"},
+]
+
+
 class NovaPoshtaAPIError(APIException):
     status_code = 502
     default_detail = "Помилка при зверненні до Nova Poshta API"
@@ -49,7 +56,11 @@ def get_cities():
 
         return cities
 
+
     except requests.exceptions.RequestException as e:
+        if settings.DEBUG:
+            return MOCK_CITIES
+
         raise NovaPoshtaAPIError(detail=f"Помилка мережі: {str(e)}")
 
 

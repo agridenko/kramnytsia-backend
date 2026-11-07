@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch
 from django.core.cache import cache
 from django.conf import settings
+from django.test import override_settings
 
 from delivery.services import get_cities
 import requests
@@ -35,24 +36,17 @@ class TestNovaPoshtaAPI:
             # 2. Реальний HTTP-запит був зроблений ТІЛЬКИ ОДИН РАЗ (другий раз взято з кешу)
             assert mock_post.call_count == 1
 
+    @override_settings(DEBUG=True)
     def test_get_cities_returns_mock_data_on_api_failure_in_debug(self):
         cache.clear()
 
-        # Зберігаємо оригінальне значення DEBUG, щоб потім відновити
-        original_debug = settings.DEBUG
-        settings.DEBUG = True  # Примусово вмикаємо DEBUG для тесту
+        with patch('delivery.services.requests.post') as mock_post:
+            # Імітуємо збій мережі
+            mock_post.side_effect = requests.exceptions.RequestException("Connection error")
 
-        try:
-            # Мокаємо запит так, ніби сервер НП впав або немає інтернету
-            with patch('delivery.services.requests.post') as mock_post:
-                mock_post.side_effect = requests.exceptions.RequestException("Connection error")
+            # Act: викликаємо функцію
+            result = get_cities()
 
-                # Act
-                result = get_cities()
-
-                # Assert: Має повернутись наш "рятувальний круг" (MOCK_CITIES)
-                assert len(result) > 0
-                assert result[0]["Description"] == "Київ"  # Перевіряємо дані з MOCK_CITIES в services.py
-        finally:
-            # Відновлюємо налаштування
-            settings.DEBUG = original_debug
+            # Assert: перевіряємо, що спрацював "рятувальний круг" (MOCK_CITIES)
+            assert len(result) > 0
+            assert result[0]["Description"] == "Київ"

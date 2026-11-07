@@ -41,8 +41,7 @@ class CartViewSet(viewsets.GenericViewSet):
     def add_item(self, request):
         """POST api/cart/add_item додати товар до кошика"""
         product_id = request.data.get("product_id")
-        quantity = request.data.get("quantity", 1)
-
+        quantity = int(request.data.get("quantity", 1))
 
         if not product_id:
             return Response(
