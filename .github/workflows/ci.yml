@@ -50,7 +50,9 @@ jobs:
         # Передаємо тестові змінні оточення для GitHub Actions
         DJANGO_SETTINGS_MODULE: config.settings.dev
         SECRET_KEY: fake-secret-key-for-ci
-        DEBUG: True
+        DEBUG: "True"
+        DJANGO_DEBUG: "True"
+        ALLOWED_HOSTS: "*"
         DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
         CELERY_BROKER_URL: redis://localhost:6379/0
         LIQPAY_PUBLIC_KEY: sandbox_test_key
