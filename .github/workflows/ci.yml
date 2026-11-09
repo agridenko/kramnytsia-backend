@@ -53,6 +53,11 @@ jobs:
         DEBUG: "True"
         DJANGO_DEBUG: "True"
         ALLOWED_HOSTS: "*"
+        POSTGRES_DB: test_db
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
         DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
         CELERY_BROKER_URL: redis://localhost:6379/0
         LIQPAY_PUBLIC_KEY: sandbox_test_key
