@@ -3,7 +3,7 @@ import traceback
 from django.core.wsgi import get_wsgi_application
 
 # Переконайся, що 'config.settings.dev' відповідає шляху до твого файлу налаштувань
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.prod')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 
 try:
     # Спробуємо запустити додаток
