@@ -65,4 +65,4 @@ jobs:
         LIQPAY_SANDBOX: 1
         NOVA_POSHTA_API_KEY: test_api_key
       run: |
-        pytest --cov=cart --cov=delivery --cov=orders --cov=products --cov=payments
+        pytest --cov=apps.cart --cov=apps.delivery --cov=apps.orders --cov=apps.products --cov=apps.payments

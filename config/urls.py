@@ -35,7 +35,7 @@ urlpatterns = [
     path(
         "api/v1/",
          include(
-             "products.urls",
+             "apps.products.urls",
              namespace="products"
          )
     ),
@@ -44,7 +44,7 @@ urlpatterns = [
     path(
         "api/v1/users/",
          include(
-             "users.urls",
+             "apps.users.urls",
              namespace="users"
          )
     ),
@@ -53,7 +53,7 @@ urlpatterns = [
     path(
         "api/v1/",
          include(
-             "cart.urls",
+             "apps.cart.urls",
              namespace="cart"
          )
     ),
@@ -62,7 +62,7 @@ urlpatterns = [
     path(
         "api/v1/",
          include(
-             "orders.urls",
+             "apps.orders.urls",
              namespace="orders"
          )
     ),
@@ -71,7 +71,7 @@ urlpatterns = [
     path(
         "api/v1/",
          include(
-             "delivery.urls",
+             "apps.delivery.urls",
              namespace="delivery"
          )
     ),
@@ -80,7 +80,7 @@ urlpatterns = [
     path(
         "api/v1/",
          include(
-             "payments.urls",
+             "apps.payments.urls",
              namespace="payments"
          )
     ),
