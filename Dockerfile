@@ -21,4 +21,6 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 # Для запуску на Render
-CMD python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+CMD python manage.py migrate --noinput && \
+    python manage.py seed_data && \
+    gunicorn config.wsgi:application --bind 0.0.0.0:$PORT

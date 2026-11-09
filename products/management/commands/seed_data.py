@@ -8,9 +8,10 @@
 Це важливо — інакше тести та скріншоти для README щоразу різні.
 """
 
+import os
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
-
+from django.conf import settings
 from products.models import Category, Product
 
 
@@ -520,17 +521,21 @@ class Command(BaseCommand):
         parser.add_argument(
             "--reset",
             action="store_true",
-            help="Спершу видалити всі товари та категорії. Тільки для розробки!",
+            help="Спершу видалити всі товари та категорії. ЗАБОРОНЕНО на продакшні!",
         )
 
     @transaction.atomic
     def handle(self, *args, **options):
+        # 0. БЕЗПЕКА: Забороняємо --reset на продакшні
+        if options["reset"] and not settings.DEBUG:
+            raise CommandError("Використання --reset на продакшні (DEBUG=False) заборонено з міркувань безпеки!")
+
         if options["reset"]:
             deleted_products, _ = Product.objects.all().delete()
             deleted_categories, _ = Category.objects.all().delete()
             self.stdout.write(
                 self.style.WARNING(
-                    f"Очищено базу: {deleted_products} товарів, "
+                    f"🧹 Очищено базу: {deleted_products} товарів, "
                     f"{deleted_categories} категорій."
                 )
             )
@@ -540,29 +545,44 @@ class Command(BaseCommand):
         created_categories = 0
 
         for item in CATEGORIES:
+            # Шукаємо за унікальним slug. Якщо немає - створюємо з defaults.
             category, created = Category.objects.get_or_create(
                 slug=item["slug"],
                 defaults={"name": item["name"]},
             )
             categories[category.slug] = category
-            created_categories += int(created)
+            if created:
+                created_categories += 1
 
         # 2. Товари ----------------------------------------------------
         created_products = 0
         existing_products = 0
 
         for item in PRODUCTS:
-            payload = dict(item)                     # копія, щоб не псувати оригінал
-            category_slug = payload.pop("category")  # це НЕ поле моделі
+            payload = dict(item)  # копія, щоб не псувати оригінал
+            category_slug = payload.pop("category")  # це НЕ поле моделі, а ключ для пошуку
 
             category = categories.get(category_slug)
             if category is None:
-                raise CommandError(f"Невідома категорія: {category_slug}")
+                # Замість крашу всього деплою, просто пропускаємо товар і йдемо далі
+                self.stdout.write(
+                    self.style.ERROR(
+                        f"⚠️ Пропущено товар '{payload.get('name', 'Невідомо')}'. Невідома категорія: {category_slug}")
+                )
+                continue
 
-            payload["category"] = category            # а це вже поле моделі
+            payload["category"] = category  # а це вже поле моделі
             slug = payload.pop("slug")
 
-            _, created = Product.objects.get_or_create(slug=slug, defaults=payload)
+            # 💡 ВАЖЛИВО ДЛЯ RENDER: Якщо у тебе є поле 'image', і файлів немає на сервері,
+            # розкоментуй наступний рядок, щоб уникнути помилок "File not found" при створенні.
+            payload.pop("image", None)
+
+            product, created = Product.objects.get_or_create(
+                slug=slug,
+                defaults=payload
+            )
+
             if created:
                 created_products += 1
             else:
@@ -574,10 +594,10 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Готово. Категорій створено: {created_categories}. "
-                f"Товарів створено: {created_products}, уже існувало: {existing_products}."
+                f"✅ Готово. Категорій створено: {created_categories}. "
+                f"Товарів створено: {created_products}, вже існувало: {existing_products}."
             )
         )
         self.stdout.write(
-            f"У базі тепер: {total} товарів, у наявності: {available}."
+            self.style.SUCCESS(f"📊 У базі тепер: {total} товарів, у наявності: {available}.")
         )
