@@ -4,7 +4,7 @@ from .base import *  # noqa: F403,F405
 
 DEBUG = False
 
-ALLOWED_HOSTS = [".onrender.com", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["https://kramnytsia-backend.onrender.com", "127.0.0.1", "localhost"]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
