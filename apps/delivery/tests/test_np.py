@@ -20,7 +20,7 @@ class TestNovaPoshtaAPI:
             "data": [{"Ref": "test-ref", "Description": "Тестове місто", "Area": "Тестова область"}]
         }
 
-        with patch('delivery.services.requests.post') as mock_post:
+        with patch("apps.delivery.services.requests.post") as mock_post:
             # Налаштовуємо, що має повернути наш мок
             mock_post.return_value.json.return_value = mock_response_data
             mock_post.return_value.raise_for_status.return_value = None
@@ -39,7 +39,7 @@ class TestNovaPoshtaAPI:
     def test_get_cities_returns_mock_data_on_api_failure_in_debug(self):
         cache.clear()
 
-        with patch('delivery.services.requests.post') as mock_post:
+        with patch("apps.delivery.services.requests.post") as mock_post:
             # Імітуємо збій мережі
             mock_post.side_effect = requests.exceptions.RequestException("Connection error")
 
