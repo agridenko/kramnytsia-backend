@@ -19,3 +19,6 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # 6. Копіюємо весь код проєкту в контейнер
 COPY . .
+
+# Для запуску на Render
+CMD python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
