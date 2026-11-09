@@ -61,12 +61,12 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "django_filters",
-    "products",
-    "users",
-    "cart",
-    "orders",
-    "delivery",
-    "payments",
+    "apps.products.apps.ProductsConfig",
+    "apps.users.apps.UsersConfig",
+    "apps.cart.apps.CartConfig",
+    "apps.orders.apps.OrdersConfig",
+    "apps.delivery.apps.DeliveryConfig",
+    "apps.payments.apps.PaymentsConfig",
 ]
 
 MIDDLEWARE = [

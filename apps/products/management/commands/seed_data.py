@@ -8,11 +8,10 @@
 Це важливо — інакше тести та скріншоти для README щоразу різні.
 """
 
-import os
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.conf import settings
-from products.models import Category, Product
+from apps.products.models import Category, Product
 
 
 # ---------------------------------------------------------------------------

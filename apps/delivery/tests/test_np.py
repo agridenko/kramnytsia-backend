@@ -1,10 +1,9 @@
 import pytest
 from unittest.mock import patch
 from django.core.cache import cache
-from django.conf import settings
 from django.test import override_settings
 
-from delivery.services import get_cities
+from apps.delivery.services import get_cities
 import requests
 
 

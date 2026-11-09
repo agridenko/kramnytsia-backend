@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 
 from apps.products.factories import ProductFactory
-from cart.models import Cart, CartItem
+from apps.cart.models import Cart, CartItem
 
 
 @pytest.fixture
