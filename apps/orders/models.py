@@ -1,8 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
 
 from config.settings import base as settings
-from products.models import Product
+from apps.products.models import Product
 from decimal import Decimal
 
 

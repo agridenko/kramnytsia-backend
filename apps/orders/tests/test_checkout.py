@@ -2,9 +2,9 @@ import pytest
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from products.factories import ProductFactory
+from apps.products.factories import ProductFactory
 from orders.models import Order
-from cart.models import Cart, CartItem
+from apps.cart.models import Cart, CartItem
 from django.contrib.auth import get_user_model
 
 

@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 
-from orders.models import Order
-from orders.tasks import send_order_confirmation_email
+from apps.orders.models import Order
+from apps.orders.tasks import send_order_confirmation_email
 from .models import Payment
 from .serializers import CreatePaymentRequestSerializer, LiqPayCallbackSerializer
 from .services import create_payment, verify_callback

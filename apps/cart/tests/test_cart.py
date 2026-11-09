@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from products.factories import ProductFactory
+from apps.products.factories import ProductFactory
 from cart.models import Cart, CartItem
 
 

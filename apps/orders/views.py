@@ -7,9 +7,9 @@ from django.db.models import F
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Order, OrderItem
-from .serializers import OrderSerializer, OrderItemSerializer
-from cart.models import CartItem, Cart
-from products.models import Product
+from .serializers import OrderSerializer
+from apps.cart.models import Cart
+from apps.products.models import Product
 
 
 class OrderViewSet(viewsets.ReadOnlyModelViewSet):
