@@ -1,0 +1,21 @@
+repos:
+  # 1. Black: автоматичне форматування коду (PEP 8)
+  - repo: https://github.com/psf/black
+    rev: 24.2.0
+    hooks:
+      - id: black
+        language_version: python3.12
+
+  # 2. isort: сортування імпортів за алфавітом та групами
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"] # Каже isort бути сумісним з Black
+
+  # 3. Flake8: перевірка стилю та синтаксичних помилок
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: ["--max-line-length=88", "--extend-ignore=E203,W503"] # 88 символів - стандарт Black

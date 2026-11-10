@@ -1,11 +1,11 @@
 import pytest
-from rest_framework.test import APIClient
-from rest_framework import status
-
-from apps.products.factories import ProductFactory
-from apps.orders.models import Order
-from apps.cart.models import Cart, CartItem
 from django.contrib.auth import get_user_model
+from rest_framework import status
+from rest_framework.test import APIClient
+
+from apps.cart.models import Cart, CartItem
+from apps.orders.models import Order
+from apps.products.factories import ProductFactory
 
 
 @pytest.fixture
@@ -18,10 +18,7 @@ def api_client():
 def user(db):
     """Фікстура: створює тестового користувача."""
     User = get_user_model()
-    return User.objects.create_user(
-        email="test@example.com",
-        password="testpass123"
-    )
+    return User.objects.create_user(email="test@example.com", password="testpass123")
 
 
 @pytest.fixture
@@ -42,7 +39,7 @@ class TestCheckout:
     """Тести для ендпоінта оформлення замовлення."""
 
     def test_checkout_successfully_creates_order(
-            self, authenticated_client, user, product_with_stock
+        self, authenticated_client, user, product_with_stock
     ):
         """Успішне оформлення замовлення має зменшити stock."""
         # Arrange: додаємо товар у кошик
@@ -68,9 +65,7 @@ class TestCheckout:
         # Перевіряємо, що кошик очищено
         assert cart.items.count() == 0
 
-    def test_checkout_fails_when_cart_is_empty(
-            self, authenticated_client, user
-    ):
+    def test_checkout_fails_when_cart_is_empty(self, authenticated_client, user):
         """Оформлення з порожнім кошиком має повернути 400."""
         Cart.objects.create(user=user)  # порожній кошик
 
@@ -81,11 +76,13 @@ class TestCheckout:
         assert Order.objects.count() == 0
 
     def test_checkout_fails_when_not_enough_stock(
-            self, authenticated_client, user, product_with_stock
+        self, authenticated_client, user, product_with_stock
     ):
         """Не можна купити більше, ніж є на складі."""
         cart = Cart.objects.create(user=user)
-        CartItem.objects.create(cart=cart, product=product_with_stock, quantity=100)  # просимо 100, є 10
+        CartItem.objects.create(
+            cart=cart, product=product_with_stock, quantity=100
+        )  # просимо 100, є 10
 
         response = authenticated_client.post("/api/v1/orders/checkout/")
 
@@ -96,9 +93,7 @@ class TestCheckout:
         product_with_stock.refresh_from_db()
         assert product_with_stock.stock == 10
 
-    def test_checkout_requires_authentication(
-            self, api_client, product_with_stock
-    ):
+    def test_checkout_requires_authentication(self, api_client, product_with_stock):
         """Без авторизації оформити замовлення не можна."""
         response = api_client.post("/api/v1/orders/checkout/")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED

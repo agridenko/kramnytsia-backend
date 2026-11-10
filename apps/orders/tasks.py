@@ -1,7 +1,8 @@
-from celery import shared_task
-from django.core.mail import send_mail
-from django.conf import settings
 import time
+
+from celery import shared_task
+from django.conf import settings
+from django.core.mail import send_mail
 
 
 @shared_task
@@ -17,7 +18,10 @@ def send_order_confirmation_email(order_id: int):
     # order = Order.objects.get(id=order_id)
     # email = order.user.email
 
-    print(f"[CELERY] Відправляємо email підтвердження для замовлення #{order_id} на пошту...")
+    print(
+        f"[CELERY] Відправляємо email підтвердження "
+        f"для замовлення #{order_id} на пошту..."
+    )
 
     # Для тесту використовуємо console backend (виведе email у термінал Django)
     send_mail(

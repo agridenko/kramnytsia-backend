@@ -1,10 +1,10 @@
 import pytest
 from django.contrib.auth import get_user_model
-from rest_framework.test import APIClient
 from rest_framework import status
+from rest_framework.test import APIClient
 
-from apps.products.factories import ProductFactory
 from apps.cart.models import Cart, CartItem
+from apps.products.factories import ProductFactory
 
 
 @pytest.fixture
@@ -15,7 +15,9 @@ def api_client():
 @pytest.fixture
 def user(db):
     User = get_user_model()
-    return User.objects.create_user(email="cart_test@example.com", password="testpass123")
+    return User.objects.create_user(
+        email="cart_test@example.com", password="testpass123"
+    )
 
 
 @pytest.fixture
@@ -37,7 +39,9 @@ class TestCartAPI:
         assert CartItem.objects.count() == 0
 
         # Act: Додаємо товар
-        response = auth_client.post("/api/v1/cart/add_item/", {"product_id": product.id, "quantity": 2})
+        response = auth_client.post(
+            "/api/v1/cart/add_item/", {"product_id": product.id, "quantity": 2}
+        )
 
         # Assert
         assert response.status_code == status.HTTP_201_CREATED
@@ -52,7 +56,9 @@ class TestCartAPI:
         CartItem.objects.create(cart=cart, product=product, quantity=2)
 
         # Act: Додаємо той самий товар ще раз
-        response = auth_client.post("/api/v1/cart/add_item/", {"product_id": product.id, "quantity": 3})
+        response = auth_client.post(
+            "/api/v1/cart/add_item/", {"product_id": product.id, "quantity": 3}
+        )
 
         # Assert: Кількість має збільшитись (2 + 3 = 5), а новий запис не створюється
         assert response.status_code == status.HTTP_201_CREATED

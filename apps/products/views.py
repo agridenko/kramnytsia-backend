@@ -1,11 +1,11 @@
-from rest_framework import viewsets
-from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from .models import Product, Category
+from .models import Category, Product
 from .permissions import IsAdminOrContentManagerOrReadOnly
-from .serializers import ProductSerializer, CategorySerializer
+from .serializers import CategorySerializer, ProductSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -25,4 +25,4 @@ class ProductViewSet(viewsets.ModelViewSet):
     filterset_fields = ["category", "age_from", "players_min", "players_max", "price"]
     search_fields = ["name", "description"]
     ordering_fields = ["price", "created_at", "name"]
-    ordering = ['-created_at']
+    ordering = ["-created_at"]

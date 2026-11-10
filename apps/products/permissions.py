@@ -1,9 +1,10 @@
 from django.contrib.auth.models import PermissionsMixin
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
 class IsAdminOrContentManagerOrReadOnly(BasePermission):
     """Allow access only to admin users."""
+
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True

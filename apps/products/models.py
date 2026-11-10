@@ -9,17 +9,18 @@ from django.utils.text import slugify
 
 class Category(models.Model):
     """Категорія товарів (категорія, в якій розміщуються товари)"""
+
     name = models.CharField(
         max_length=255,
         unique=True,
         verbose_name="Назва категорії",
-        help_text="Наприклад: 'Смартфони', 'Ноутбуки', 'Планшети'"
+        help_text="Наприклад: 'Смартфони', 'Ноутбуки', 'Планшети'",
     )
     slug = models.SlugField(
         max_length=255,
         unique=True,
         verbose_name="URL-адреса категорії",
-        help_text="URL-адреса для доступу до категорії товарів"
+        help_text="URL-адреса для доступу до категорії товарів",
     )
 
     class Meta:
@@ -31,37 +32,35 @@ class Category(models.Model):
 
 
 def product_image_path(instance: "Product", filename: str) -> pathlib.Path:
-    filename = f"{slugify(instance.slug)}_{uuid.uuid4()}" + pathlib.Path(filename).suffix
+    filename = (
+        f"{slugify(instance.slug)}_{uuid.uuid4()}" + pathlib.Path(filename).suffix
+    )
     date_path = datetime.datetime.now().strftime("%Y/%m/%d/")
     return pathlib.Path(f"uploads/products/{date_path}") / pathlib.Path(filename)
 
 
 class Product(models.Model):
     """Товар (інформація про товар)"""
-    name = models.CharField(
-        max_length=255,
-        verbose_name="Назва товару"
-    )
+
+    name = models.CharField(max_length=255, verbose_name="Назва товару")
     slug = models.SlugField(
         max_length=255,
         unique=True,
         verbose_name="URL-адреса товару",
-        help_text="URL-адреса для доступу до товару"
+        help_text="URL-адреса для доступу до товару",
     )
     description = models.TextField(
         blank=True,
         verbose_name="Опис товару",
-        help_text="Опис товару, який буде відображатися на сторінці товару"
+        help_text="Опис товару, який буде відображатися на сторінці товару",
     )
     price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Ціна товару"
+        max_digits=10, decimal_places=2, verbose_name="Ціна товару"
     )
     stock = models.PositiveIntegerField(
         default=0,
         verbose_name="Залишок на складі",
-        help_text="Кількість товарів на складі"
+        help_text="Кількість товарів на складі",
     )
     category = models.ForeignKey(
         Category,

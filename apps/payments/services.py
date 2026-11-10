@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import json
+
 import requests
 from django.conf import settings
 from rest_framework.exceptions import APIException
@@ -42,7 +43,9 @@ def create_payment(order, return_url: str, result_url: str):
     # Підпис: private_key + data_base64 + private_key
     private_key = settings.LIQPAY_PRIVATE_KEY.strip()
     signature_string = private_key + data_base64 + private_key
-    signature = base64.b64encode(hashlib.sha1(signature_string.encode("utf-8")).digest()).decode("utf-8")
+    signature = base64.b64encode(
+        hashlib.sha1(signature_string.encode("utf-8")).digest()
+    ).decode("utf-8")
 
     # Відправляємо запит до LiqPay
     payload = {
@@ -62,15 +65,22 @@ def create_payment(order, return_url: str, result_url: str):
         if result.get("status") == "error" or result.get("err_description"):
             # МАГІЯ ДЛЯ РОЗРОБКИ: Якщо це sandbox і він ламається, ми імітуємо успіх
             if settings.DEBUG and settings.LIQPAY_SANDBOX:
-                print("LiqPay Sandbox повернув помилку. Використовуємо MOCK-відповідь для продовження розробки.")
+                print(
+                    "LiqPay Sandbox повернув помилку. "
+                    "Використовуємо MOCK-відповідь для продовження розробки."
+                )
                 return {
                     "payment_id": f"mock_pay_{order.id}",
                     "liqpay_order_id": generated_order_id,
-                    "redirect_url": f"http://127.0.0.1:8000/api/v1/payments/result/?order_id={generated_order_id}",
+                    "redirect_url": f"http://127.0.0.1:8000/api/v1/payments/result/"
+                    f"?order_id={generated_order_id}",
                 }
 
             # Якщо це не DEBUG (продакшн), ми кидаємо справжню помилку
-            raise LiqPayAPIError(detail=f"LiqPay помилка: {result.get('err_description', 'Невідома помилка')}")
+            raise LiqPayAPIError(
+                detail=f"LiqPay помилка: "
+                f"{result.get('err_description', 'Невідома помилка')}"
+            )
 
         return {
             "payment_id": result.get("payment_id"),
@@ -78,14 +88,14 @@ def create_payment(order, return_url: str, result_url: str):
             "redirect_url": result.get("url"),
         }
 
-
     except requests.exceptions.RequestException as e:
         if settings.DEBUG and settings.LIQPAY_SANDBOX:
             print("Мережева помилка LiqPay. Використовуємо MOCK-відповідь.")
             return {
                 "payment_id": f"mock_pay_{order.id}",
                 "liqpay_order_id": generated_order_id,
-                "redirect_url": f"http://127.0.0.1:8000/api/v1/payments/result/?order_id={generated_order_id}",
+                "redirect_url": f"http://127.0.0.1:8000/api/v1/payments/result/"
+                f"?order_id={generated_order_id}",
             }
         raise LiqPayAPIError(detail=f"Помилка мережі: {str(e)}")
 
@@ -100,7 +110,9 @@ def verify_callback(data_base64: str, signature_base64: str) -> dict:
     data = json.loads(data_json)
 
     # Перевіряємо підпис
-    expected_signature_string = settings.LIQPAY_PRIVATE_KEY + data_base64 + settings.LIQPAY_PRIVATE_KEY
+    expected_signature_string = (
+        settings.LIQPAY_PRIVATE_KEY + data_base64 + settings.LIQPAY_PRIVATE_KEY
+    )
     expected_signature = base64.b64encode(
         hashlib.sha1(expected_signature_string.encode("utf-8")).digest()
     ).decode("utf-8")

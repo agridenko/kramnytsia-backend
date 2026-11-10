@@ -1,14 +1,15 @@
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .services import get_cities, get_warehouses, calculate_delivery_cost
+from .services import calculate_delivery_cost, get_cities, get_warehouses
 
 
 class NovaPoshtaCitiesViewset(APIView):
     """GET /api/delivery/np/cities/ - Отримуємо список міст для Нова Пошта"""
+
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -28,6 +29,7 @@ class NovaPoshtaCitiesViewset(APIView):
 
 class NovaPoshtaWarehousesViewset(APIView):
     """GET /api/delivery/np/warehouses/?city_ref=xxx - Спсиок відділень міста"""
+
     permission_classes = [AllowAny]
 
     @extend_schema(
@@ -41,14 +43,10 @@ class NovaPoshtaWarehousesViewset(APIView):
             )
         ]
     )
-
     def get(self, request):
         city_ref = request.query_params.get("city_ref")
         if not city_ref:
-            return Response(
-                {"error": "City ref is required"},
-                status=400
-            )
+            return Response({"error": "City ref is required"}, status=400)
 
         warehouses = get_warehouses(city_ref)
 
@@ -66,6 +64,7 @@ class NovaPoshtaWarehousesViewset(APIView):
 
 class NovaPoshtaDeliveryCostView(APIView):
     """GET /api/delivery/np/cost/ - Стоимість доставки"""
+
     permission_classes = [AllowAny]
 
     @extend_schema(
@@ -83,7 +82,7 @@ class NovaPoshtaDeliveryCostView(APIView):
                 location=OpenApiParameter.QUERY,
                 description="Вага посилки в кг (за замовчанням 1 кг)",
                 required=True,
-            )
+            ),
         ]
     )
     def get(self, request):
@@ -91,17 +90,13 @@ class NovaPoshtaDeliveryCostView(APIView):
         weight = request.query_params.get("weight", 1.0)
 
         if not city_ref:
-            return Response(
-                {"error": "Параметр city_ref є обов'язковим"},
-                status=400
-            )
+            return Response({"error": "Параметр city_ref є обов'язковим"}, status=400)
 
         try:
             weight = float(weight)
         except ValueError:
             return Response(
-                {"error": "Параметр weight повинен бути числом"},
-                status=400
+                {"error": "Параметр weight повинен бути числом"}, status=400
             )
 
         cost_data = calculate_delivery_cost(city_ref, weight)

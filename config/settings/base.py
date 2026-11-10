@@ -13,19 +13,16 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
-from django.contrib import admin
+
 import environ
-
+from django.contrib import admin
 from dotenv import load_dotenv
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env(
-    DEBUG=(bool, False)
-)
-#Читаємо зміні з файлу .env
+env = environ.Env(DEBUG=(bool, False))
+# Читаємо зміні з файлу .env
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 
@@ -40,7 +37,12 @@ DEBUG = env("DJANGO_DEBUG")
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=["https://kramnytsia-backend.onrender.com", "localhost", "127.0.0.1", "0.0.0.0"]
+    default=[
+        "https://kramnytsia-backend.onrender.com",
+        "localhost",
+        "127.0.0.1",
+        "0.0.0.0",
+    ],
 )
 
 INTERNAL_IPS = [
@@ -117,19 +119,16 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation."
-                "UserAttributeSimilarityValidator",
+        "UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation."
-                "MinimumLengthValidator",
+        "NAME": "django.contrib.auth.password_validation." "MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation."
-                "CommonPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation." "CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation."
-                "NumericPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation." "NumericPasswordValidator",
     },
 ]
 
@@ -156,7 +155,7 @@ MEDIA_URL = "/media/"
 
 MEDIA_ROOT = BASE_DIR / "media"
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
@@ -168,39 +167,33 @@ MAILERS = {
 }
 
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework."
-                                "pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework." "pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
-
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
-
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        "anon": "60/hour", # 60 запитів на годину для гостей (напр., перегляд товарів)
-        "user": "1000/hour", # 1000 запитів на годину для залогінених користувачів
-        "login": "5/hour", # Тільки 5 спроб входу на годину (захист від брутфорсу!)
-        "payment": "10/hour", # Тільки 10 спроб створення платежу на годину
+        "anon": "60/hour",  # 60 запитів на годину для гостей (напр., перегляд товарів)
+        "user": "1000/hour",  # 1000 запитів на годину для залогінених користувачів
+        "login": "5/hour",  # Тільки 5 спроб входу на годину (захист від брутфорсу!)
+        "payment": "10/hour",  # Тільки 10 спроб створення платежу на годину
     },
-
 }
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Kramnytsia API",
     "DESCRIPTION": "API інтернет-магазину настільних ігор. "
-                   "Каталог, кошик, замовлення.",
+    "Каталог, кошик, замовлення.",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "SWAGGER_UI_SETTINGS": {
@@ -221,88 +214,104 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-NOVA_POSHTA_API_KEY = env("NOVA_POSHTA_API_KEY", default='')
+NOVA_POSHTA_API_KEY = env("NOVA_POSHTA_API_KEY", default="")
 
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake", # Унікальне ім'я для цього кешу
-        "TIMEOUT": 86400, # 24 години за замовчуванням
+        "LOCATION": "unique-snowflake",  # Унікальне ім'я для цього кешу
+        "TIMEOUT": 86400,  # 24 години за замовчуванням
     }
 }
 
 
-LIQPAY_PUBLIC_KEY = env('LIQPAY_PUBLIC_KEY', default='')
-LIQPAY_PRIVATE_KEY = env('LIQPAY_PRIVATE_KEY', default='')
-LIQPAY_SANDBOX = env.bool('LIQPAY_SANDBOX', default=True)
+LIQPAY_PUBLIC_KEY = env("LIQPAY_PUBLIC_KEY", default="")
+LIQPAY_PRIVATE_KEY = env("LIQPAY_PRIVATE_KEY", default="")
+LIQPAY_SANDBOX = env.bool("LIQPAY_SANDBOX", default=True)
 
 
 # Налаштування Celery
-CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://redis:6379/0')
-CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://redis:6379/0')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Europe/Kyiv'
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://redis:6379/0")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://redis:6379/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "Europe/Kyiv"
 
 
-#Функція для сортування меню адмін панелі
+# Функція для сортування меню адмін панелі
 def custom_get_app_list(self, request, app_label=None):
     """Фронтенд-сортування меню адмін панелі"""
     app_dict = self._build_app_dict(request, app_label)
     app_list = list(app_dict.values())
 
-    #Сисок моделей, які ми хочемо побачити в блокі "Магазин"
-    shop_model_names = ["Category", "Product", "Cart", "CartItem", "Order", "OrderItem", "Payment"]
-    user_model_names = ["User", "Group", ]
+    # Сисок моделей, які ми хочемо побачити в блокі "Магазин"
+    shop_model_names = [
+        "Category",
+        "Product",
+        "Cart",
+        "CartItem",
+        "Order",
+        "OrderItem",
+        "Payment",
+    ]
+    user_model_names = [
+        "User",
+        "Group",
+    ]
 
     shop_models = []
     user_models = []
 
     # Достаємо моделі з їхньих батьківських додатків
     for app in app_list:
-        for model in app['models'][:]:
-            if model['object_name'] in shop_model_names:
+        for model in app["models"][:]:
+            if model["object_name"] in shop_model_names:
                 shop_models.append(model)
-                app['models'].remove(model)
-            elif model['object_name'] in user_model_names:
+                app["models"].remove(model)
+            elif model["object_name"] in user_model_names:
                 user_models.append(model)
-                app['models'].remove(model)
+                app["models"].remove(model)
 
     # Сортуємо моделі всередині магазину (за алфавітом)
-    shop_models.sort(key=lambda x: x['name'])
-    user_models.sort(key=lambda x: x['name'])
+    shop_models.sort(key=lambda x: x["name"])
+    user_models.sort(key=lambda x: x["name"])
 
     # Формуємо новий чистий список додатків для виводу
     final_apps = []
 
     # 1. Якщо знайшли моделі для Інтернет магазину, створюємо для них секцію
     if shop_models:
-        final_apps.append({
-            'name': 'Інтернет-магазин',
-            'app_label': 'shop_custom',
-            'app_url': '',
-            'has_module_perms': True,
-            'models': shop_models,
-        })
+        final_apps.append(
+            {
+                "name": "Інтернет-магазин",
+                "app_label": "shop_custom",
+                "app_url": "",
+                "has_module_perms": True,
+                "models": shop_models,
+            }
+        )
 
     if user_models:
-        final_apps.append({
-            'name': 'Користувачі та доступ',
-            'app_label': 'users',
-            'app_url': '',
-            'has_module_perms': True,
-            'models': user_models,
-        })
+        final_apps.append(
+            {
+                "name": "Користувачі та доступ",
+                "app_label": "users",
+                "app_url": "",
+                "has_module_perms": True,
+                "models": user_models,
+            }
+        )
 
     # 2. Додаємо всі інші додатки, в разі якщо вони не порожні
     for app in app_list:
-        if app['models']:
+        if app["models"]:
             # Опціонально: можна перейменувати блок вашої програми users на льоту
-            if app['app_label'] == 'users':
-                app['name'] = 'Пользователи и доступ'
+            if app["app_label"] == "users":
+                app["name"] = "Пользователи и доступ"
             final_apps.append(app)
 
     return final_apps
+
 
 # Магія Python: замінюємо вбудований метод Django на наш кастомний глобально
 admin.AdminSite.get_app_list = custom_get_app_list

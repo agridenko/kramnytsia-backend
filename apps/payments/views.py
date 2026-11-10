@@ -1,20 +1,22 @@
+from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db import transaction
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.orders.models import Order
 from apps.orders.tasks import send_order_confirmation_email
+from apps.users.throttles import PaymentRateThrottle
+
 from .models import Payment
 from .serializers import CreatePaymentRequestSerializer, LiqPayCallbackSerializer
 from .services import create_payment, verify_callback
-from apps.users.throttles import PaymentRateThrottle
 
 
 class CreatePaymentView(APIView):
     """POST /api/payments/create/ - Створити платіж для замовлення"""
+
     permission_classes = [IsAuthenticated]
     throttle_classes = [PaymentRateThrottle]
 
@@ -26,13 +28,14 @@ class CreatePaymentView(APIView):
                 "properties": {
                     "payment_id": {"type": "string"},
                     "redirect_url": {"type": "string"},
-                }
+                },
             },
             400: {"type": "object"},
             404: {"type": "object"},
             502: {"type": "object"},
         },
-        description="Створює платіж через LiqPay для вказаного замовлення. Повертає URL для переходу до оплати."
+        description="Створює платіж через LiqPay для вказаного замовлення. "
+        "Повертає URL для переходу до оплати.",
     )
     def post(self, request):
         serializer = CreatePaymentRequestSerializer(data=request.data)
@@ -59,7 +62,8 @@ class CreatePaymentView(APIView):
             return Response(
                 {
                     "payment_id": order.payment.liqpay_order_id,
-                    "redirect_url": f"https://www.liqpay.ua/checkout?order_id={order.payment.liqpay_order_id}",
+                    "redirect_url": f"https://www.liqpay.ua/checkout"
+                    f"?order_id={order.payment.liqpay_order_id}",
                 },
                 status=status.HTTP_200_OK,
             )
@@ -68,8 +72,10 @@ class CreatePaymentView(APIView):
         try:
             payment_data = create_payment(
                 order=order,
-                return_url="http://127.0.0.1:8000/api/payments/result/",  # Для локальної розробки
-                result_url="http://127.0.0.1:8000/api/payments/callback/",  # Webhook
+                # Для локальної розробки
+                return_url="http://127.0.0.1:8000/api/payments/result/",
+                # Webhook
+                result_url="http://127.0.0.1:8000/api/payments/callback/",
             )
         except Exception as e:
             return Response(
@@ -79,8 +85,11 @@ class CreatePaymentView(APIView):
 
         # Зберігаємо платіж у БД
         with transaction.atomic():
-            # Додаємо захисну перевірку: якщо чомусь все одно прийшов None, використовуємо ID замовлення
-            safe_liqpay_order_id = payment_data.get("liqpay_order_id") or f"order_{order.id}"
+            # Додаємо захисну перевірку: якщо чомусь все
+            # одно прийшов None, використовуємо ID замовлення
+            safe_liqpay_order_id = (
+                payment_data.get("liqpay_order_id") or f"order_{order.id}"
+            )
 
             payment = Payment.objects.create(
                 order=order,
@@ -101,6 +110,7 @@ class CreatePaymentView(APIView):
 
 class LiqPayCallbackView(APIView):
     """POST /api/payments/callback/ - Webhook від LiqPay"""
+
     permission_classes = []  # LiqPay відправляє без авторизації
 
     @extend_schema(
@@ -111,7 +121,7 @@ class LiqPayCallbackView(APIView):
             404: {"type": "object"},
         },
         description="Webhook від LiqPay для оновлення статусу платежу. "
-                    "Використовується для імітації оплати в локальній розробці."
+        "Використовується для імітації оплати в локальній розробці.",
     )
     def post(self, request):
         data_base64 = request.data.get("data")
@@ -165,6 +175,7 @@ class LiqPayCallbackView(APIView):
 
 class LiqPayResultView(APIView):
     """GET /api/payments/result/ - Куди повертається користувач після оплати"""
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

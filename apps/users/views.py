@@ -23,9 +23,9 @@ class RegisterView(generics.CreateAPIView):
                     "username": user.username,
                     "email": user.email,
                 },
-                "message": "Користувач успішно зареєстрований"
+                "message": "Користувач успішно зареєстрований",
             },
-            status=status.HTTP_201_CREATED
+            status=status.HTTP_201_CREATED,
         )
 
 

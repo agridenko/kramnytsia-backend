@@ -1,19 +1,20 @@
 from decimal import Decimal
 
-from django.db import models
 from django.core.exceptions import ValidationError
+from django.db import models
 
-from config.settings import base as settings
 from apps.products.models import Product
+from config.settings import base as settings
 
 
 class Cart(models.Model):
     """Кошик користувача. Один користувач = один кошик."""
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="cart",
-        verbose_name="Користувач"
+        verbose_name="Користувач",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -29,7 +30,7 @@ class Cart(models.Model):
     def total_price(self) -> Decimal:
         total = sum(
             (item.subtotal for item in self.items.select_related("product").all()),
-            Decimal("0.00")
+            Decimal("0.00"),
         )
         return total
 
@@ -40,22 +41,17 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     """Позиція в кошику: товар + кількість."""
+
     cart = models.ForeignKey(
-        Cart,
-        on_delete=models.CASCADE,
-        related_name="items",
-        verbose_name="Кошик"
+        Cart, on_delete=models.CASCADE, related_name="items", verbose_name="Кошик"
     )
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
         related_name="cart_items",
-        verbose_name="Товар"
+        verbose_name="Товар",
     )
-    quantity = models.PositiveIntegerField(
-        default=1,
-        verbose_name="Кількість"
-    )
+    quantity = models.PositiveIntegerField(default=1, verbose_name="Кількість")
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -72,4 +68,6 @@ class CartItem(models.Model):
 
     def clean(self) -> None:
         if self.quantity > self.product.stock:
-            raise ValidationError(f"Cannot add more than {self.product.stock} items to the cart.")
+            raise ValidationError(
+                f"Cannot add more than {self.product.stock} items to the cart."
+            )

@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Cart, CartItem
 
 
@@ -6,7 +7,11 @@ class CartItemInline(admin.TabularInline):
     model = CartItem
     extra = 1
     raw_id_fields = ("product",)
-    fields = ("product", "quantity",)
+    fields = (
+        "product",
+        "quantity",
+    )
+
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):

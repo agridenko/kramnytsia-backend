@@ -1,10 +1,11 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
+import requests
 from django.core.cache import cache
 from django.test import override_settings
 
 from apps.delivery.services import get_cities
-import requests
 
 
 @pytest.mark.django_db
@@ -14,10 +15,17 @@ class TestNovaPoshtaAPI:
         # Очищаємо кеш перед тестом для чистоти експерименту
         cache.clear()
 
-        # Мокаємо requests.post, щоб він не робив реальний запит, а повертав фейкові дані
+        # Мокаємо requests.post, щоб він не робив реальний запит,
+        # а повертав фейкові дані
         mock_response_data = {
             "success": True,
-            "data": [{"Ref": "test-ref", "Description": "Тестове місто", "Area": "Тестова область"}]
+            "data": [
+                {
+                    "Ref": "test-ref",
+                    "Description": "Тестове місто",
+                    "Area": "Тестова область",
+                }
+            ],
         }
 
         with patch("apps.delivery.services.requests.post") as mock_post:
@@ -32,7 +40,8 @@ class TestNovaPoshtaAPI:
             # Assert:
             # 1. Результати однакові
             assert result1 == result2
-            # 2. Реальний HTTP-запит був зроблений ТІЛЬКИ ОДИН РАЗ (другий раз взято з кешу)
+            # 2. Реальний HTTP-запит був зроблений ТІЛЬКИ ОДИН РАЗ
+            # (другий раз взято з кешу)
             assert mock_post.call_count == 1
 
     @override_settings(DEBUG=True)
@@ -41,7 +50,9 @@ class TestNovaPoshtaAPI:
 
         with patch("apps.delivery.services.requests.post") as mock_post:
             # Імітуємо збій мережі
-            mock_post.side_effect = requests.exceptions.RequestException("Connection error")
+            mock_post.side_effect = requests.exceptions.RequestException(
+                "Connection error"
+            )
 
             # Act: викликаємо функцію
             result = get_cities()
