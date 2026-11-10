@@ -117,9 +117,9 @@ class Product(models.Model):
 # очищення кешу
 @receiver([post_save, post_delete], sender=Category)
 def clear_cache_category(sender, instance, **kwargs):
-    cache.delete("category_list")
+    cache.clear()
 
 
 @receiver([post_save, post_delete], sender=Product)
 def clear_product_cache(sender, instance, **kwargs):
-    cache.delete("products_list")
+    cache.clear()

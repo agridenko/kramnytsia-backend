@@ -18,7 +18,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """Кешуемо на 24 години"""
 
     def list(self, request, *args, **kwargs):
-        cache_key = "category_list"
+        cache_key = f"category_{request.get_full_path()}"
 
         # 1. Пробуэмо дыстати з кешу
         cache_data = cache.get(cache_key)
@@ -48,7 +48,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     """кешування списку продуктів на 1 годину"""
 
     def list(self, request, *args, **kwargs):
-        cache_key = "products_list"
+        cache_key = f"products_{request.get_full_path()}"
 
         cached_data = cache.get(cache_key)
         if cached_data is not None:
