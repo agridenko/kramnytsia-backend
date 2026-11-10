@@ -183,6 +183,18 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "60/hour", # 60 запитів на годину для гостей (напр., перегляд товарів)
+        "user": "1000/hour", # 1000 запитів на годину для залогінених користувачів
+        "login": "5/hour", # Тільки 5 спроб входу на годину (захист від брутфорсу!)
+        "payment": "10/hour", # Тільки 10 спроб створення платежу на годину
+    },
+
 }
 
 SPECTACULAR_SETTINGS = {

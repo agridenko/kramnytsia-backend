@@ -10,11 +10,13 @@ from apps.orders.tasks import send_order_confirmation_email
 from .models import Payment
 from .serializers import CreatePaymentRequestSerializer, LiqPayCallbackSerializer
 from .services import create_payment, verify_callback
+from apps.users.throttles import PaymentRateThrottle
 
 
 class CreatePaymentView(APIView):
     """POST /api/payments/create/ - Створити платіж для замовлення"""
     permission_classes = [IsAuthenticated]
+    throttle_classes = [PaymentRateThrottle]
 
     @extend_schema(
         request=CreatePaymentRequestSerializer,
