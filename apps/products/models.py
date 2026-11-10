@@ -2,7 +2,10 @@ import datetime
 import pathlib
 import uuid
 
+from django.core.cache import cache
 from django.db import models
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -109,3 +112,14 @@ class Product(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse("product_detail", args=[self.slug])
+
+
+# очищення кешу
+@receiver([post_save, post_delete], sender=Category)
+def clear_cache_category(sender, instance, **kwargs):
+    cache.delete("category_list")
+
+
+@receiver([post_save, post_delete], sender=Product)
+def clear_product_cache(sender, instance, **kwargs):
+    cache.delete("products_list")

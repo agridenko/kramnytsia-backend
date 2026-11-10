@@ -218,9 +218,12 @@ NOVA_POSHTA_API_KEY = env("NOVA_POSHTA_API_KEY", default="")
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",  # Унікальне ім'я для цього кешу
-        "TIMEOUT": 86400,  # 24 години за замовчуванням
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("CELERY_BROKER_URL", default="redis://redis:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "TIMEOUT": 60 * 15,  # За замовчуванням кеш живе 15 хвилин
     }
 }
 
