@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "django_filters",
+    "corsheaders",
     "apps.products.apps.ProductsConfig",
     "apps.users.apps.UsersConfig",
     "apps.cart.apps.CartConfig",
@@ -75,6 +76,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -168,7 +170,7 @@ MAILERS = {
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework." "pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
+    "PAGE_SIZE": 12,
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
@@ -183,10 +185,14 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.UserRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        "anon": "60/hour",  # 60 запитів на годину для гостей (напр., перегляд товарів)
-        "user": "1000/hour",  # 1000 запитів на годину для залогінених користувачів
-        "login": "5/hour",  # Тільки 5 спроб входу на годину (захист від брутфорсу!)
-        "payment": "10/hour",  # Тільки 10 спроб створення платежу на годину
+        # 60 запитів на годину для гостей (напр., перегляд товарів)
+        "anon": "60/hour",
+        # 1000 запитів на годину для залогінених користувачів
+        "user": "1000/hour",
+        # Тільки 5 спроб входу на годину (захист від брутфорсу!)
+        "login": "5/hour",
+        # Тільки 10 спроб створення платежу на годину
+        "payment": "10/hour",
     },
 }
 
@@ -239,6 +245,18 @@ CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://redis:6379
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TIMEZONE = "Europe/Kyiv"
+
+
+# Дозволяємо запити з локального React-додатку
+# (Vite за замовчуванням використовує порт 5173)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# Якщо будеш використовувати cookies для JWT
+# (опціонально, але рекомендовано)
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Функція для сортування меню адмін панелі

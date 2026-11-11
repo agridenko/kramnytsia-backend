@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 
+from .filters import ProductFilter
 from .models import Category, Product
 from .permissions import IsAdminOrContentManagerOrReadOnly
 from .serializers import CategorySerializer, ProductSerializer
@@ -40,7 +41,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrContentManagerOrReadOnly]
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ["category", "age_from", "players_min", "players_max", "price"]
+    # filterset_fields = ["category", "age_from", "players_min", "players_max", "price"]
+    filterset_class = ProductFilter
     search_fields = ["name", "description"]
     ordering_fields = ["price", "created_at", "name"]
     ordering = ["-created_at"]
