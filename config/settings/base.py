@@ -38,7 +38,7 @@ DEBUG = env("DJANGO_DEBUG")
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
     default=[
-        "https://kramnytsia-backend.onrender.com",
+        "kramnytsia-backend.onrender.com",
         "localhost",
         "127.0.0.1",
         "0.0.0.0",
