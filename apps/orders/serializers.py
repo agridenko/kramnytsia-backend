@@ -20,6 +20,9 @@ class OrderSerializer(serializers.ModelSerializer):
     """Серіалізатор для замовлення"""
 
     items = OrderItemSerializer(many=True, read_only=True)
+    total_with_delivery = serializers.DecimalField(
+        max_digits=10, decimal_places=2, read_only=True
+    )
 
     class Meta:
         model = Order
@@ -27,8 +30,17 @@ class OrderSerializer(serializers.ModelSerializer):
             "id",
             "status",
             "total_price",
+            "delivery_cost",
+            "total_with_delivery",
             "items",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["status", "total_price", "created_at", "updated_at"]
+        read_only_fields = [
+            "status",
+            "total_price",
+            "delivery_cost",
+            "total_with_delivery",
+            "created_at",
+            "updated_at",
+        ]

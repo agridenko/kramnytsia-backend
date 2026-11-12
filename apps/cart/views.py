@@ -123,7 +123,8 @@ class CartViewSet(viewsets.GenericViewSet):
     def clear(self, request):
         """POST api/cart/clear очистити кошик"""
         cart = self.get_object()
-        cart.items.all().delete()
+        # cart.items.all().delete()
+        cart.delete()
         return Response(
             {"message": "Cart cleared successfully."}, status=status.HTTP_204_NO_CONTENT
         )

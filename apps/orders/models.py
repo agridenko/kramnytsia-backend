@@ -31,6 +31,13 @@ class Order(models.Model):
         default=Decimal("0.00"),
         verbose_name="Загальна вартість",
     )
+    delivery_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        verbose_name="Вартість доставки",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -44,6 +51,10 @@ class Order(models.Model):
             f"Замовлення #{self.id} від {self.user.first_name} "
             f"{self.user.last_name} - {self.user.email}"
         )
+
+    @property
+    def total_with_delivery(self) -> Decimal:
+        return self.total_price + self.delivery_cost
 
 
 class OrderItem(models.Model):

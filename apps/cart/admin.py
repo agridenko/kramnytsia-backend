@@ -17,7 +17,13 @@ class CartItemInline(admin.TabularInline):
 class CartAdmin(admin.ModelAdmin):
     inlines = [CartItemInline]
 
-    list_display = ["id", "user", "get_total_items", "created_at"]
+    list_display = [
+        "id",
+        "user",
+        "get_total_items",
+        "created_at",
+        "total_price",
+    ]
     list_filter = ["created_at"]
     search_fields = ["user__username", "user__email"]
 

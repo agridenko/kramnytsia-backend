@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import transaction
 from django.db.models import F
 from django_filters.rest_framework import DjangoFilterBackend
@@ -50,6 +52,8 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                 {"error": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST
             )
 
+        delivery_cost = Decimal(request.data.get("delivery_cost", 0))
+
         # *************************************************************
         # ТРАНЗАКЦІЯ: починаємо оформлення замовлення
         # *************************************************************
@@ -91,7 +95,9 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                 )
 
             # 3. Створення замовлення
-            order = Order.objects.create(user=request.user, total_price=total_price)
+            order = Order.objects.create(
+                user=request.user, total_price=total_price, delivery_cost=delivery_cost
+            )
 
             # 4. Створення елементів замовлення
             order_items = [
@@ -112,7 +118,7 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                 )
 
             # 6. Очищаємо кошик
-            cart.items.all().delete()
+            cart.delete()
 
             # -------------------------------------------------------------------
             # ТРАНЗАКЦІЯ: успішно завершена
