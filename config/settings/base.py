@@ -253,7 +253,10 @@ CELERY_TIMEZONE = "Europe/Kyiv"
 
 # Дозволяємо запити з локального React-додатку
 # (Vite за замовчуванням використовує порт 5173)
-CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS", default="http://localhost:5173")
+cors_origins_str = env("CORS_ALLOWED_ORIGINS", default="http://localhost:5173")
+CORS_ALLOWED_ORIGINS = [
+    origin.strip() for origin in cors_origins_str.split(",") if origin.strip()
+]
 
 # Якщо будеш використовувати cookies для JWT
 # (опціонально, але рекомендовано)
