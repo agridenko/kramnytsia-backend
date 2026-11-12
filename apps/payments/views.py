@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from apps.orders.models import Order
 from apps.orders.tasks import send_order_confirmation_email
 from apps.users.throttles import PaymentRateThrottle
+from config.settings import base as settings
 
 from .models import Payment
 from .serializers import CreatePaymentRequestSerializer, LiqPayCallbackSerializer
@@ -57,25 +58,30 @@ class CreatePaymentView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Перевіряємо, чи вже є платіж для цього замовлення
+        # Якщо платіж вже існує — повертаємо його дані
         if hasattr(order, "payment"):
+            payment = order.payment
+            # Регенеруємо data/signature (вони можуть протухнути)
+            payment_data = create_payment(
+                order=order,
+                return_url=f"{settings.FRONTEND_URL}/payment/success",
+                server_url="http://127.0.0.1:8000/api/v1/payments/callback/",
+            )
             return Response(
                 {
-                    "payment_id": order.payment.liqpay_order_id,
-                    "redirect_url": f"https://www.liqpay.ua/checkout"
-                    f"?order_id={order.payment.liqpay_order_id}",
+                    "payment_id": payment.liqpay_order_id,
+                    **payment_data,
                 },
                 status=status.HTTP_200_OK,
             )
 
-        # Створюємо платіж
+        # return_url = куди повернеться КОРИСТУВАЧ (FRONT-END React-сторінка)
+        # server_url = куди прийде WEBHOOK (бекенд)
         try:
             payment_data = create_payment(
                 order=order,
-                # Для локальної розробки
-                return_url="http://127.0.0.1:8000/api/payments/result/",
-                # Webhook
-                result_url="http://127.0.0.1:8000/api/payments/callback/",
+                return_url=f"{settings.FRONTEND_URL}/payment/success",
+                server_url="http://127.0.0.1:8000/api/v1/payments/callback/",
             )
         except Exception as e:
             return Response(
@@ -83,29 +89,16 @@ class CreatePaymentView(APIView):
                 status=status.HTTP_502_BAD_GATEWAY,
             )
 
-        # Зберігаємо платіж у БД
         with transaction.atomic():
-            # Додаємо захисну перевірку: якщо чомусь все
-            # одно прийшов None, використовуємо ID замовлення
-            safe_liqpay_order_id = (
-                payment_data.get("liqpay_order_id") or f"order_{order.id}"
-            )
-
             payment = Payment.objects.create(
                 order=order,
-                liqpay_order_id=safe_liqpay_order_id,
-                amount=order.total_price,
+                liqpay_order_id=payment_data["liqpay_order_id"],
+                amount=order.total_with_delivery,  # 🔥 З доставкою
                 currency="UAH",
                 status=Payment.Status.PENDING,
             )
 
-        return Response(
-            {
-                "payment_id": payment.liqpay_order_id,
-                "redirect_url": payment_data.get("redirect_url"),
-            },
-            status=status.HTTP_201_CREATED,
-        )
+        return Response(payment_data, status=status.HTTP_201_CREATED)
 
 
 class LiqPayCallbackView(APIView):

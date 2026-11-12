@@ -259,6 +259,10 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 
+# URL фронтенду
+FRONTEND_URL = "http://localhost:5173"
+
+
 # Функція для сортування меню адмін панелі
 def custom_get_app_list(self, request, app_label=None):
     """Фронтенд-сортування меню адмін панелі"""
