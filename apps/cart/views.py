@@ -127,3 +127,16 @@ class CartViewSet(viewsets.GenericViewSet):
         return Response(
             {"message": "Cart cleared successfully."}, status=status.HTTP_204_NO_CONTENT
         )
+
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        """GET /api/v1/cart/me/ - отримати кошик поточного користувача"""
+        cart = Cart.objects.filter(user=request.user).first()
+
+        if not cart:
+            return Response({"items": []})
+
+        items = cart.items.select_related("product").all()
+        serializer = CartItemSerializer(items, many=True)
+
+        return Response({"id": cart.id, "items": serializer.data})
