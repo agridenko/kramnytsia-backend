@@ -20,8 +20,9 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # 6. Копіюємо весь код проєкту в контейнер
 COPY . .
 
-# 7. Збираємо статичні файли. Якщо цього не зробити, адмінка та API docs будуть ламатися (500/404)
-RUN python manage.py collectstatic --noinput || echo "⚠️ Static files collection skipped or failed, continuing..."
+# 7. Збираємо статичні файли.
+RUN mkdir -p /app/config/staticfiles
+RUN python manage.py collectstatic --noinput
 
 
 # Для запуску на Render
