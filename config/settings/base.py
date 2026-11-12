@@ -230,12 +230,10 @@ NOVA_POSHTA_API_KEY = env("NOVA_POSHTA_API_KEY", default="")
 
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": env("CELERY_BROKER_URL", default="redis://redis:6379/1"),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-        "TIMEOUT": 60 * 15,  # За замовчуванням кеш живе 15 хвилин
+        # Використовуємо вбудований кеш у пам'яті замість Redis
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "kramnytsia-unique-cache",
+        "TIMEOUT": 60 * 15,  # 15 хвилин
     }
 }
 
