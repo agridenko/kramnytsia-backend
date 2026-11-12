@@ -253,10 +253,7 @@ CELERY_TIMEZONE = "Europe/Kyiv"
 
 # Дозволяємо запити з локального React-додатку
 # (Vite за замовчуванням використовує порт 5173)
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS", default="http://localhost:5173")
 
 # Якщо будеш використовувати cookies для JWT
 # (опціонально, але рекомендовано)
@@ -264,7 +261,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 # URL фронтенду
-FRONTEND_URL = "http://localhost:5173"
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:5173")
 
 
 # Функція для сортування меню адмін панелі
