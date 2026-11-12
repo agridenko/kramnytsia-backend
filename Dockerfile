@@ -22,10 +22,10 @@ COPY . .
 
 # 7. Збираємо статичні файли.
 RUN mkdir -p /app/config/staticfiles
-RUN python manage.py collectstatic --noinput
 
 
 # Для запуску на Render
 CMD python manage.py migrate --noinput && \
+    python manage.py collectstatic --noinput && \
     python manage.py seed_data && \
     gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
