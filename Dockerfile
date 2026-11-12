@@ -21,7 +21,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 # 7. Збираємо статичні файли. Якщо цього не зробити, адмінка та API docs будуть ламатися (500/404)
-RUN python manage.py collectstatic --noinput || echo "Static files collection skipped or failed, continuing..."
+RUN python manage.py collectstatic --noinput || echo "⚠️ Static files collection skipped or failed, continuing..."
 
 
 # Для запуску на Render

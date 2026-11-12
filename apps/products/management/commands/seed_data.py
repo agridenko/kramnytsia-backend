@@ -608,19 +608,48 @@ class Command(BaseCommand):
             else:
                 existing_products += 1
 
-        # 3. Звіт ------------------------------------------------------
-        total = Product.objects.count()
-        available = Product.objects.filter(stock__gt=0).count()
+            # 3. Створюємо суперюзера (якщо його немає)
+            from django.contrib.auth import get_user_model
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"✅ Готово. Категорій створено: {created_categories}. "
-                f"Товарів створено: {created_products}, "
-                f"вже існувало: {existing_products}."
+            User = get_user_model()
+
+            # Змінити на безпечніший у продакшені
+            # (краще для продакшену взагалі не застосовувати) !!!
+            admin_email = "admin@admin.com"
+            admin_password = "123456789"
+
+            if not User.objects.filter(email=admin_email).exists():
+                User.objects.create_superuser(
+                    email=admin_email,
+                    password=admin_password,
+                    first_name="Admin",
+                    last_name="Kramnytsia",
+                )
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"👤 Суперюзер створено: {admin_email} / {admin_password}"
+                    )
+                )
+            else:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"⚠️ Суперюзер {admin_email} вже існує, пропускаємо."
+                    )
+                )
+
+            # 4. Звіт ------------------------------------------------------
+            total = Product.objects.count()
+            available = Product.objects.filter(stock__gt=0).count()
+
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"✅ Готово. Категорій створено: {created_categories}. "
+                    f"Товарів створено: {created_products}, "
+                    f"вже існувало: {existing_products}."
+                )
             )
-        )
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"📊 У базі тепер: {total} товарів, у наявності: {available}."
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"📊 У базі тепер: {total} товарів, у наявності: {available}."
+                )
             )
-        )
