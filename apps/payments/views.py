@@ -129,6 +129,7 @@ class LiqPayCallbackView(APIView):
         try:
             data = verify_callback(data_base64, signature_base64)
         except Exception as e:
+            print(f"LIQPAY VERIFY ERROR: {e}")
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -138,24 +139,40 @@ class LiqPayCallbackView(APIView):
         order_id = data.get("order_id")
         payment_status = data.get("status")
 
+        print(
+            f"🔔 LIQPAY WEBHOOK RECEIVED: order_id={order_id}, status={payment_status}"
+        )
+
         try:
+            # LiqPay іноді передає order_id як "order_1", а іноді просто "1"
+            # Спробуємо знайти за повним ID, а якщо не вийде - за числом
             payment = Payment.objects.get(liqpay_order_id=order_id)
         except Payment.DoesNotExist:
-            return Response(
-                {"error": "Платіж не знайдено"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+            # Фолбек: якщо order_id прийшов як число, шукаємо за order_id замовлення
+            try:
+                clean_order_id = str(order_id).replace("order_", "")
+                payment = Payment.objects.get(order_id=clean_order_id)
+            except Payment.DoesNotExist:
+                print(f"⚠️ PAYMENT NOT FOUND for order_id: {order_id}")
+                return Response(
+                    {"error": "Платіж не знайдено"}, status=status.HTTP_404_NOT_FOUND
+                )
 
         with transaction.atomic():
-            if payment_status == "success":
+            # 🔥 ДОДАНО "sandbox" до успішних статусів!
+            if payment_status in ["success", "sandbox"]:
                 payment.status = Payment.Status.SUCCESS
                 payment.order.status = Order.Status.PAID
 
-                # Викликаємо фонову задачу для відправки email підтвердження
-                send_order_confirmation_email.delay(payment.order.id)
+                # 🔥 БЕЗПЕЧНИЙ ВИКЛИК CELERY (не зламає webhook, якщо Redis впав)
+                try:
+                    send_order_confirmation_email.delay(payment.order.id)
+                except Exception as e:
+                    print(f"⚠️ CELERY ERROR (non-fatal): {e}")
 
             elif payment_status in ["error", "failure"]:
                 payment.status = Payment.Status.FAILURE
+                payment.order.status = Order.Status.CANCELED
             elif payment_status == "wait_accept":
                 payment.status = Payment.Status.PENDING
 
@@ -163,7 +180,12 @@ class LiqPayCallbackView(APIView):
             payment.save()
             payment.order.save()
 
-        return Response({"success": True})
+            print(
+                f"✅ PAYMENT UPDATED: Order #{payment.order.id} "
+                f"is now {payment.order.status}"
+            )
+
+        return Response({"success": True}, status=status.HTTP_200_OK)
 
 
 class LiqPayResultView(APIView):
