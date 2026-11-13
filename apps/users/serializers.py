@@ -1,14 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 
 class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ["id", "username", "email", "password", "is_staff"]
+        fields = ["id", "email", "password", "is_staff", "first_name", "last_name"]
         read_only_fields = ["id", "is_staff"]
         extra_kwargs = {
             "password": {

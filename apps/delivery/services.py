@@ -3,11 +3,18 @@ from django.conf import settings
 from django.core.cache import cache
 from rest_framework.exceptions import APIException
 
-
 # Тестові дані на випадок, якщо API НП лежить
 MOCK_CITIES = [
-    {"Ref": "8d5a980d-391c-11dd-90d9-001a92567626", "Description": "Київ", "Area": "Київська"},
-    {"Ref": "db5c88d0-391c-11dd-90d9-001a92567626", "Description": "Львів", "Area": "Львівська"},
+    {
+        "Ref": "8d5a980d-391c-11dd-90d9-001a92567626",
+        "Description": "Київ",
+        "Area": "Київська",
+    },
+    {
+        "Ref": "db5c88d0-391c-11dd-90d9-001a92567626",
+        "Description": "Львів",
+        "Area": "Львівська",
+    },
 ]
 
 
@@ -56,7 +63,6 @@ def get_cities():
 
         return cities
 
-
     except requests.exceptions.RequestException as e:
         if settings.DEBUG:
             return MOCK_CITIES
@@ -76,9 +82,7 @@ def get_warehouses(city_ref: str):
         "apiKey": settings.NOVA_POSHTA_API_KEY,
         "modelName": "Address",
         "calledMethod": "getWarehouses",
-        "methodProperties": {
-            "CityRef": city_ref
-        },
+        "methodProperties": {"CityRef": city_ref},
     }
 
     try:
@@ -132,7 +136,7 @@ def calculate_delivery_cost(city_recipient_ref: str, weight: float = 1.0):
             "CityRecipient": city_recipient_ref,
             "Weight": weight,
             "ServiceType": "WarehouseDoors",
-            "Cost": "1000" # Оголошена ціна (для прикладу)
+            "Cost": "1000",  # Оголошена ціна (для прикладу)
         },
     }
 
@@ -146,15 +150,19 @@ def calculate_delivery_cost(city_recipient_ref: str, weight: float = 1.0):
         data = response.json()
 
         if data.get("success") is False:
-            raise NovaPoshtaAPIError(detail=data.get("errors", ["Помилка API Nova Poshta"]))
+            raise NovaPoshtaAPIError(
+                detail=data.get("errors", ["Помилка API Nova Poshta"])
+            )
 
         # API пщвертає список, беремо перший елемент
         result = data["data"][0]
 
         cost_data = {
-            "cost": result.get("Cost", "0.00"), # Вартість доставки
-            "estimated_delivery_date": result.get("EstimatedDeliveryDate", "Невідомо"), # Приблизна дата
-            "currency": "UAH"
+            "cost": result.get("Cost", "0.00"),  # Вартість доставки
+            "estimated_delivery_date": result.get(
+                "EstimatedDeliveryDate", "Невідомо"
+            ),  # Приблизна дата
+            "currency": "UAH",
         }
 
         # КЕшуємо на 12 годин
@@ -167,6 +175,6 @@ def calculate_delivery_cost(city_recipient_ref: str, weight: float = 1.0):
             return {
                 "cost": "150.00",
                 "estimated_delivery_date": "Завтра",
-                "currency": "UAH"
+                "currency": "UAH",
             }
         raise NovaPoshtaAPIError(detail=f"Помилка мережі: {str(e)}")

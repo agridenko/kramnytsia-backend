@@ -1,8 +1,9 @@
+from decimal import Decimal
+
 from django.db import models
 
-from config.settings import base as settings
 from apps.products.models import Product
-from decimal import Decimal
+from config.settings import base as settings
 
 
 class Order(models.Model):
@@ -19,20 +20,24 @@ class Order(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="orders",
-        verbose_name="Користувач"
+        verbose_name="Користувач",
     )
     status = models.CharField(
-        max_length=50,
-        choices=Status.choices,
-        default=Status.NEW,
-        verbose_name="Статус"
+        max_length=50, choices=Status.choices, default=Status.NEW, verbose_name="Статус"
     )
     total_price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=Decimal("0.00"),
-        verbose_name="Загальна вартість"
+        verbose_name="Загальна вартість",
     )
+    delivery_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        verbose_name="Вартість доставки",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -42,28 +47,31 @@ class Order(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
-        return f"Замовлення #{self.id} від {self.user.first_name} {self.user.last_name} - {self.user.email}"
+        return (
+            f"Замовлення #{self.id} від {self.user.first_name} "
+            f"{self.user.last_name} - {self.user.email}"
+        )
+
+    @property
+    def total_with_delivery(self) -> Decimal:
+        return self.total_price + self.delivery_cost
 
 
 class OrderItem(models.Model):
     """Позиція замовлення"""
+
     order = models.ForeignKey(
-        Order,
-        on_delete=models.CASCADE,
-        related_name="items",
-        verbose_name="Замовлення"
+        Order, on_delete=models.CASCADE, related_name="items", verbose_name="Замовлення"
     )
     product = models.ForeignKey(
         Product,
         on_delete=models.PROTECT,
         related_name="order_items",
-        verbose_name="Товар"
+        verbose_name="Товар",
     )
     quantity = models.PositiveIntegerField(verbose_name="Кількість")
     price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Ціна на момент замовлення"
+        max_digits=10, decimal_places=2, verbose_name="Ціна на момент замовлення"
     )
 
     class Meta:

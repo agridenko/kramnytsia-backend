@@ -8,11 +8,11 @@
 Це важливо — інакше тести та скріншоти для README щоразу різні.
 """
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
-from django.conf import settings
-from apps.products.models import Category, Product
 
+from apps.products.models import Category, Product
 
 # ---------------------------------------------------------------------------
 # ДАНІ
@@ -40,7 +40,8 @@ PRODUCTS: list[dict] = [
         "age_from": 10,
         "players_min": 3,
         "players_max": 4,
-        "description": "Класична стратегія про заселення острова: ресурси, торгівля та дороги.",
+        "description": "Класична стратегія про заселення острова: "
+        "ресурси, торгівля та дороги.",
     },
     {
         "name": "Крила",
@@ -51,7 +52,8 @@ PRODUCTS: list[dict] = [
         "age_from": 10,
         "players_min": 1,
         "players_max": 5,
-        "description": "Ви будуєте заповідник і залучаєте птахів. Прекрасні ілюстрації та моторошна математика.",
+        "description": "Ви будуєте заповідник і залучаєте птахів. "
+        "Прекрасні ілюстрації та моторошна математика.",
     },
     {
         "name": "7 Чудес",
@@ -73,7 +75,8 @@ PRODUCTS: list[dict] = [
         "age_from": 12,
         "players_min": 1,
         "players_max": 5,
-        "description": "Ви — корпорація, що перетворює Марс на придатну для життя планету. Багато карт, багато мислення.",
+        "description": "Ви — корпорація, що перетворює Марс на придатну "
+        "для життя планету. Багато карт, багато мислення.",
     },
     {
         "name": "Еверделл",
@@ -84,7 +87,8 @@ PRODUCTS: list[dict] = [
         "age_from": 10,
         "players_min": 1,
         "players_max": 4,
-        "description": "Економічна стратегія про дерев'яне місто тварин із 3D-елементом.",
+        "description": "Економічна стратегія про дерев'яне "
+        "місто тварин із 3D-елементом.",
     },
     {
         "name": "Рут",
@@ -95,7 +99,8 @@ PRODUCTS: list[dict] = [
         "age_from": 10,
         "players_min": 2,
         "players_max": 4,
-        "description": "Асиметрична війна лісових фракцій: у кожної — свої правила гри.",
+        "description": "Асиметрична війна лісових фракцій: "
+        "у кожної — свої правила гри.",
     },
     {
         "name": "Скит",
@@ -106,7 +111,8 @@ PRODUCTS: list[dict] = [
         "age_from": 14,
         "players_min": 1,
         "players_max": 7,
-        "description": "Альтернативна історія Європи 1920-х: ресурси, мехи та наполеглива дипломатія.",
+        "description": "Альтернативна історія Європи 1920-х: "
+        "ресурси, мехи та наполеглива дипломатія.",
     },
     {
         "name": "Малий світ",
@@ -150,7 +156,8 @@ PRODUCTS: list[dict] = [
         "age_from": 9,
         "players_min": 2,
         "players_max": 6,
-        "description": "Пригодницький забіг до Корони Володарства з боями та артефактами.",
+        "description": "Пригодницький забіг до Корони Володарства "
+        "з боями та артефактами.",
     },
     {
         "name": "Імперія Сутінків",
@@ -161,9 +168,9 @@ PRODUCTS: list[dict] = [
         "age_from": 14,
         "players_min": 3,
         "players_max": 6,
-        "description": "Велетенська космічна епопея на 6+ годин. Для тих, хто справді любить ігри.",
+        "description": "Велетенська космічна епопея на 6+ годин. "
+        "Для тих, хто справді любить ігри.",
     },
-
     # ------------------------- СІМЕЙНІ -------------------------
     {
         "name": "Каркассон",
@@ -174,7 +181,8 @@ PRODUCTS: list[dict] = [
         "age_from": 7,
         "players_min": 2,
         "players_max": 5,
-        "description": "Ви викладаєте плитки й будуєте дороги, міста та поля. Ідеальна гра для вечері з родиною.",
+        "description": "Ви викладаєте плитки й будуєте дороги, "
+        "міста та поля. Ідеальна гра для вечері з родиною.",
     },
     {
         "name": "Білет на поїзд",
@@ -207,7 +215,8 @@ PRODUCTS: list[dict] = [
         "age_from": 8,
         "players_min": 2,
         "players_max": 4,
-        "description": "Виkladіть керамічну плитку в мозаїку королівського палацу. Красива і підступна.",
+        "description": "Виkladіть керамічну плитку в мозаїку королівського палацу. "
+        "Красива і підступна.",
     },
     {
         "name": "Кінгдоміно",
@@ -262,7 +271,8 @@ PRODUCTS: list[dict] = [
         "age_from": 8,
         "players_min": 2,
         "players_max": 4,
-        "description": "Варіація на тему лото, де кожен намагається зібрати мішечок і не вибухнути.",
+        "description": "Варіація на тему лото, де кожен намагається "
+        "зібрати мішечок і не вибухнути.",
     },
     {
         "name": "Монополія",
@@ -275,7 +285,6 @@ PRODUCTS: list[dict] = [
         "players_max": 6,
         "description": "Класика про нерухомість, банки та зіпсовані сімейні стосунки.",
     },
-
     # ------------------------- ПАРТІЙНІ -------------------------
     {
         "name": "Кодові імена",
@@ -297,7 +306,8 @@ PRODUCTS: list[dict] = [
         "age_from": 6,
         "players_min": 2,
         "players_max": 5,
-        "description": "Швидка гра на збирання наборів суші. Правилах — хвилина, партія — 15 хвилин.",
+        "description": "Швидка гра на збирання наборів суші. "
+        "Правилах — хвилина, партія — 15 хвилин.",
     },
     {
         "name": "Манчкін",
@@ -321,7 +331,6 @@ PRODUCTS: list[dict] = [
         "players_max": 5,
         "description": "Руська рулетка з картами: тягніть, поки не вибухне.",
     },
-
     # ------------------------- КООПЕРАЦІЙНІ -------------------------
     {
         "name": "Пандемія",
@@ -332,7 +341,8 @@ PRODUCTS: list[dict] = [
         "age_from": 8,
         "players_min": 2,
         "players_max": 4,
-        "description": "Ви граєте не проти один одного, а проти хвороби. Програєте — разом.",
+        "description": "Ви граєте не проти один одного, "
+        "а проти хвороби. Програєте — разом.",
     },
     {
         "name": "Острів духів",
@@ -343,7 +353,8 @@ PRODUCTS: list[dict] = [
         "age_from": 14,
         "players_min": 1,
         "players_max": 4,
-        "description": "Жорстока кооперативна стратегія про захист острова від духів помсти.",
+        "description": "Жорстока кооперативна стратегія про "
+        "захист острова від духів помсти.",
     },
     {
         "name": "Анлок!",
@@ -365,9 +376,9 @@ PRODUCTS: list[dict] = [
         "age_from": 14,
         "players_min": 1,
         "players_max": 4,
-        "description": "Кампанійний бойовик із сотнями сценаріїв. Гра на місяці, а не на вечір.",
+        "description": "Кампанійний бойовик із сотнями сценаріїв. "
+        "Гра на місяці, а не на вечір.",
     },
-
     # ------------------------- ЕКОНОМІЧНІ -------------------------
     {
         "name": "Сплендор",
@@ -378,7 +389,8 @@ PRODUCTS: list[dict] = [
         "age_from": 8,
         "players_min": 2,
         "players_max": 4,
-        "description": "Гірко, швидко й елегантно: коштовності, карти та оптимізація ходів.",
+        "description": "Гірко, швидко й елегантно: "
+        "коштовності, карти та оптимізація ходів.",
     },
     {
         "name": "Брас: Бірмінгем",
@@ -389,7 +401,8 @@ PRODUCTS: list[dict] = [
         "age_from": 14,
         "players_min": 2,
         "players_max": 4,
-        "description": "Промислова революція, вугілля, залізниця й неймовірна глибина планування.",
+        "description": "Промислова революція, вугілля, "
+        "залізниця й неймовірна глибина планування.",
     },
     {
         "name": "Агрікола",
@@ -400,7 +413,8 @@ PRODUCTS: list[dict] = [
         "age_from": 12,
         "players_min": 1,
         "players_max": 5,
-        "description": "Фермерська стратегія, де не вистачає всього: їжі, деревa, робочих рук.",
+        "description": "Фермерська стратегія, де не вистачає всього: "
+        "їжі, деревa, робочих рук.",
     },
     {
         "name": "Пуерто-Ріко",
@@ -413,7 +427,6 @@ PRODUCTS: list[dict] = [
         "players_max": 5,
         "description": "Вибір ролей, плантації та торгівля. Еталон економічної гри.",
     },
-
     # ------------------------- ДЛЯ ДВОХ -------------------------
     {
         "name": "7 Чудес: Дуель",
@@ -424,7 +437,8 @@ PRODUCTS: list[dict] = [
         "age_from": 10,
         "players_min": 2,
         "players_max": 2,
-        "description": "Одна з найкращих ігор саме для двох: війна, наука й цивілізація.",
+        "description": "Одна з найкращих ігор саме для двох: "
+        "війна, наука й цивілізація.",
     },
     {
         "name": "Кодові імена: Дует",
@@ -459,7 +473,6 @@ PRODUCTS: list[dict] = [
         "players_max": 2,
         "description": "Торгівля тканинами й верблюдами. Ризикуй або забирай прибуток.",
     },
-
     # ------------------------- ДИТЯЧІ -------------------------
     {
         "name": "Уно",
@@ -492,7 +505,8 @@ PRODUCTS: list[dict] = [
         "age_from": 3,
         "players_min": 2,
         "players_max": 4,
-        "description": "Магнітна вудка та рибки з відерцем. Перша настолка для найменших.",
+        "description": "Магнітна вудка та рибки з відерцем. "
+        "Перша настолка для найменших.",
     },
     {
         "name": "Вежа",
@@ -527,7 +541,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # 0. БЕЗПЕКА: Забороняємо --reset на продакшні
         if options["reset"] and not settings.DEBUG:
-            raise CommandError("Використання --reset на продакшні (DEBUG=False) заборонено з міркувань безпеки!")
+            raise CommandError(
+                "Використання --reset на продакшні (DEBUG=False) "
+                "заборонено з міркувань безпеки!"
+            )
 
         if options["reset"]:
             deleted_products, _ = Product.objects.all().delete()
@@ -559,27 +576,31 @@ class Command(BaseCommand):
 
         for item in PRODUCTS:
             payload = dict(item)  # копія, щоб не псувати оригінал
-            category_slug = payload.pop("category")  # це НЕ поле моделі, а ключ для пошуку
+            category_slug = payload.pop(
+                "category"
+            )  # це НЕ поле моделі, а ключ для пошуку
 
             category = categories.get(category_slug)
             if category is None:
                 # Замість крашу всього деплою, просто пропускаємо товар і йдемо далі
                 self.stdout.write(
                     self.style.ERROR(
-                        f"⚠️ Пропущено товар '{payload.get('name', 'Невідомо')}'. Невідома категорія: {category_slug}")
+                        f"⚠️ Пропущено товар '{payload.get('name', 'Невідомо')}'. "
+                        f"Невідома категорія: {category_slug}"
+                    )
                 )
                 continue
 
             payload["category"] = category  # а це вже поле моделі
             slug = payload.pop("slug")
 
-            # 💡 ВАЖЛИВО ДЛЯ RENDER: Якщо у тебе є поле 'image', і файлів немає на сервері,
-            # розкоментуй наступний рядок, щоб уникнути помилок "File not found" при створенні.
+            # 💡 ВАЖЛИВО ДЛЯ RENDER: Якщо у тебе є поле 'image',
+            # і файлів немає на сервері, розкоментуй наступний рядок,
+            # щоб уникнути помилок "File not found" при створенні.
             payload.pop("image", None)
 
             product, created = Product.objects.get_or_create(
-                slug=slug,
-                defaults=payload
+                slug=slug, defaults=payload
             )
 
             if created:
@@ -587,16 +608,48 @@ class Command(BaseCommand):
             else:
                 existing_products += 1
 
-        # 3. Звіт ------------------------------------------------------
+        # 3. Створюємо суперюзера (якщо його немає)
+        from django.contrib.auth import get_user_model
+
+        User = get_user_model()
+
+        # Змінити на безпечніший у продакшені
+        # (краще для продакшену взагалі не застосовувати) !!!
+        admin_email = "admin@admin.com"
+        admin_password = "123456789"
+
+        if not User.objects.filter(email=admin_email).exists():
+            User.objects.create_superuser(
+                email=admin_email,
+                password=admin_password,
+                first_name="Admin",
+                last_name="Kramnytsia",
+            )
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"👤 Суперюзер створено: {admin_email} / {admin_password}"
+                )
+            )
+        else:
+            self.stdout.write(
+                self.style.WARNING(
+                    f"⚠️ Суперюзер {admin_email} " f"вже існує, пропускаємо."
+                )
+            )
+
+        # 4. Звіт ------------------------------------------------------
         total = Product.objects.count()
         available = Product.objects.filter(stock__gt=0).count()
 
         self.stdout.write(
             self.style.SUCCESS(
                 f"✅ Готово. Категорій створено: {created_categories}. "
-                f"Товарів створено: {created_products}, вже існувало: {existing_products}."
+                f"Товарів створено: {created_products}, "
+                f"вже існувало: {existing_products}."
             )
         )
         self.stdout.write(
-            self.style.SUCCESS(f"📊 У базі тепер: {total} товарів, у наявності: {available}.")
+            self.style.SUCCESS(
+                f"📊 У базі тепер: {total} товарів, у наявності: {available}."
+            )
         )

@@ -1,7 +1,11 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 from .serializers import RegisterSerializer
+from .throttles import LoginRateThrottle
 
 
 class RegisterView(generics.CreateAPIView):
@@ -17,10 +21,22 @@ class RegisterView(generics.CreateAPIView):
             {
                 "user": {
                     "id": user.id,
-                    "username": user.username,
                     "email": user.email,
                 },
-                "message": "Користувач успішно зареєстрований"
+                "message": "Користувач успішно зареєстрований",
             },
-            status=status.HTTP_201_CREATED
+            status=status.HTTP_201_CREATED,
         )
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    throttle_classes = [LoginRateThrottle]
+
+
+class ManageUserView(generics.RetrieveUpdateAPIView):
+    queryset = get_user_model().objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user

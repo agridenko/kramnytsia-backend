@@ -20,7 +20,12 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # 6. Копіюємо весь код проєкту в контейнер
 COPY . .
 
+# 7. Збираємо статичні файли.
+RUN mkdir -p /app/config/staticfiles
+
+
 # Для запуску на Render
 CMD python manage.py migrate --noinput && \
+    python manage.py collectstatic --noinput && \
     python manage.py seed_data && \
     gunicorn config.wsgi:application --bind 0.0.0.0:$PORT

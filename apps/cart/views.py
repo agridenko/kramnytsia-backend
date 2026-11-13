@@ -1,11 +1,12 @@
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from apps.products.models import Product
 
 from .models import Cart, CartItem
-from .serializers import CartSerializer, CartItemSerializer
-from apps.products.models import Product
+from .serializers import CartItemSerializer, CartSerializer
 
 
 class CartViewSet(viewsets.GenericViewSet):
@@ -45,8 +46,7 @@ class CartViewSet(viewsets.GenericViewSet):
 
         if not product_id:
             return Response(
-                {"error": "Product ID is required"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": "Product ID is required"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
@@ -55,39 +55,33 @@ class CartViewSet(viewsets.GenericViewSet):
             if product.stock < quantity:
                 return Response(
                     {"error": f"Not enough stock. Available: {product.stock}"},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
         except Product.DoesNotExist:
             return Response(
-                {"error": "Product not found"},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
         cart = self.get_object()
 
-        #Перевірка чи існує товар в кошику
+        # Перевірка чи існує товар в кошику
         cart_item, created = CartItem.objects.get_or_create(
-            cart=cart,
-            product=product,
-            defaults={"quantity": quantity}
+            cart=cart, product=product, defaults={"quantity": quantity}
         )
 
         if not created:
-            #якщо товар вже є в кошику, то збільшуємо його кількість
+            # якщо товар вже є в кошику, то збільшуємо його кількість
             cart_item.quantity += quantity
             cart_item.save()
 
         serializer = CartItemSerializer(cart_item)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(
-        detail=False,
-        methods=["post"],
-        url_path="update_item/(?P<item_id>[0-9]+)"
-    )
+    @action(detail=False, methods=["post"], url_path="update_item/(?P<item_id>[0-9]+)")
     def update_item(self, request, item_id):
-        """POST api/cart/update_item/(?P<item_id>[0-9]+) оновити кількість товару в кошику"""
+        """POST api/cart/update_item/(?P<item_id>[0-9]+)
+        оновити кількість товару в кошику"""
         quantity = request.data.get("quantity", 1)
 
         cart = self.get_object()
@@ -97,7 +91,7 @@ class CartViewSet(viewsets.GenericViewSet):
         except CartItem.DoesNotExist:
             return Response(
                 {"error": "Cart item not found in the cart."},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         cart_item.quantity = quantity
@@ -106,11 +100,7 @@ class CartViewSet(viewsets.GenericViewSet):
         serializer = CartItemSerializer(cart_item)
         return Response(serializer.data)
 
-    @action(
-        detail=False,
-        methods=["post"],
-        url_path="remove_item/(?P<item_id>[0-9]+)"
-    )
+    @action(detail=False, methods=["post"], url_path="remove_item/(?P<item_id>[0-9]+)")
     def remove_item(self, request, item_id):
         """POST api/cart/remove_item/(?P<item_id>[0-9]+) видалити товар з кошику"""
         cart = self.get_object()
@@ -120,24 +110,34 @@ class CartViewSet(viewsets.GenericViewSet):
         except CartItem.DoesNotExist:
             return Response(
                 {"error": "Cart item not found in the cart."},
-                status=status.HTTP_404_NOT_FOUND
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         cart_item.delete()
         return Response(
             {"message": "Cart item removed successfully."},
-            status=status.HTTP_204_NO_CONTENT
+            status=status.HTTP_204_NO_CONTENT,
         )
 
-    @action(
-        detail=False,
-        methods=["post"]
-    )
+    @action(detail=False, methods=["post"])
     def clear(self, request):
         """POST api/cart/clear очистити кошик"""
         cart = self.get_object()
-        cart.items.all().delete()
+        # cart.items.all().delete()
+        cart.delete()
         return Response(
-            {"message": "Cart cleared successfully."},
-            status=status.HTTP_204_NO_CONTENT
+            {"message": "Cart cleared successfully."}, status=status.HTTP_204_NO_CONTENT
         )
+
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        """GET /api/v1/cart/me/ - отримати кошик поточного користувача"""
+        cart = Cart.objects.filter(user=request.user).first()
+
+        if not cart:
+            return Response({"items": []})
+
+        items = cart.items.select_related("product").all()
+        serializer = CartItemSerializer(items, many=True)
+
+        return Response({"id": cart.id, "items": serializer.data})
