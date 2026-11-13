@@ -1,35 +1,31 @@
-import time
-
-from celery import shared_task
 from django.conf import settings
 from django.core.mail import send_mail
 
 
-@shared_task
-def send_order_confirmation_email(order_id: int):
-    """
-    Фонова задача для відправки email підтвердження замовлення.
-    """
-    # Імітуємо "важку" роботу (наприклад, генерацію PDF або повільний SMTP)
-    time.sleep(3)
+def send_order_confirmation_email(order_id):
+    """Відправка email підтвердження замовлення (синхронно)"""
+    try:
+        from apps.orders.models import Order
 
-    # У реальному проєкті тут був би запит до БД:
-    # from orders.models import Order
-    # order = Order.objects.get(id=order_id)
-    # email = order.user.email
+        order = Order.objects.get(id=order_id)
 
-    print(
-        f"[CELERY] Відправляємо email підтвердження "
-        f"для замовлення #{order_id} на пошту..."
-    )
+        subject = f"Підтвердження замовлення #{order.id}"
+        message = (
+            f"Дякуємо за ваше замовлення! "
+            f"Номер замовлення: {order.id} "
+            f"Сума: {order.total_with_delivery} UAH "
+            f"Статус: {order.get_status_display()} "
+            f"Ми почнемо збирати ваше замовлення найближчим часом. "
+            f"З повагою, Команда Kramnytsia"
+        )
 
-    # Для тесту використовуємо console backend (виведе email у термінал Django)
-    send_mail(
-        subject=f"Замовлення #{order_id} успішно оплачено!",
-        message=f"Дякуємо за покупку! Ваше замовлення #{order_id} прийнято в обробку.",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=["test@example.com"],  # Заміни на реальну пошту для тесту
-        fail_silently=False,
-    )
-
-    return f"Email для замовлення {order_id} відправлено"
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [order.user.email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        print(f"❌ Помилка відправки email: {e}")
+        raise
