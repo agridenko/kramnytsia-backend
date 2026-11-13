@@ -266,6 +266,9 @@ CORS_ALLOW_CREDENTIALS = True
 # URL фронтенду
 FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:5173")
 
+# URL бекенду
+BACKEND_URL = env("BACKEND_URL", default="http://127.0.0.1:8000")
+
 
 # Функція для сортування меню адмін панелі
 def custom_get_app_list(self, request, app_label=None):

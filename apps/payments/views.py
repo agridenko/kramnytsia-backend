@@ -65,7 +65,7 @@ class CreatePaymentView(APIView):
             payment_data = create_payment(
                 order=order,
                 return_url=f"{settings.FRONTEND_URL}/payment/success",
-                server_url="http://127.0.0.1:8000/api/v1/payments/callback/",
+                server_url=f"{settings.BACKEND_URL}/api/v1/payments/callback/",
             )
             return Response(
                 {
@@ -81,7 +81,7 @@ class CreatePaymentView(APIView):
             payment_data = create_payment(
                 order=order,
                 return_url=f"{settings.FRONTEND_URL}/payment/success",
-                server_url="http://127.0.0.1:8000/api/v1/payments/callback/",
+                server_url=f"{settings.BACKEND_URL}/api/v1/payments/callback/",
             )
         except Exception as e:
             return Response(
@@ -93,7 +93,7 @@ class CreatePaymentView(APIView):
             payment = Payment.objects.create(
                 order=order,
                 liqpay_order_id=payment_data["liqpay_order_id"],
-                amount=order.total_with_delivery,  # 🔥 З доставкою
+                amount=order.total_with_delivery,  # З доставкою
                 currency="UAH",
                 status=Payment.Status.PENDING,
             )
