@@ -175,7 +175,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="agridenko@gmail.com")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="agridenko@gmail.com")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="sale@kramnytsia.com")
 
 
 REST_FRAMEWORK = {

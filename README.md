@@ -8,7 +8,9 @@
 
 Потужний, масштабований та безпечний REST API бекенд для інтернет-магазину. Проєкт розроблений з використанням сучасних практик, включаючи асинхронні задачі, інтеграцію з платіжними системами та автоматизований CI/CD.
 
-🔗 **Live API:** [https://kramnytsia-backend.onrender.com/api/docs/](https://kramnytsia-backend.onrender.com/api/docs/)
+🔗 **Live Demo (Backend API):** [https://kramnytsia-backend.onrender.com/api/docs/](https://kramnytsia-backend.onrender.com/api/docs/)  
+🔗 **Live Demo (Frontend):** [https://kramnytsia-frontend-mocha.vercel.app](https://kramnytsia-frontend-mocha.vercel.app) 
+🔗 **FrontEnd Repository:** [github.com/agridenko/kramnytsia-frontend](https://github.com/agridenko/kramnytsia-frontend)
 
 ---
 

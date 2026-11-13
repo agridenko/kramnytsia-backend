@@ -164,12 +164,12 @@ class LiqPayCallbackView(APIView):
                 payment.status = Payment.Status.SUCCESS
                 payment.order.status = Order.Status.PAID
 
-                # 🔥 БЕЗПЕЧНИЙ ВИКЛИК CELERY (не зламає webhook, якщо Redis впав)
-                try:
-                    send_order_confirmation_email(payment.order.id)
-                    print(f"✅ Email відправлено для замовлення #{payment.order.id}")
-                except Exception as e:
-                    print(f"⚠️ Помилка відправки email (не критично): {e}")
+                # # 🔥 БЕЗПЕЧНИЙ ВИКЛИК CELERY (не зламає webhook, якщо Redis впав)
+                # try:
+                #     send_order_confirmation_email(payment.order.id)
+                #     print(f"✅ Email відправлено для замовлення #{payment.order.id}")
+                # except Exception as e:
+                #     print(f"⚠️ Помилка відправки email (не критично): {e}")
 
             elif payment_status in ["error", "failure"]:
                 payment.status = Payment.Status.FAILURE
