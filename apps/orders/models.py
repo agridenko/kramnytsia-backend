@@ -1,9 +1,9 @@
 from decimal import Decimal
 
+from django.conf import settings
 from django.db import models
 
 from apps.products.models import Product
-from config.settings import base as settings
 
 
 class Order(models.Model):

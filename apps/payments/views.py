@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import transaction
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -8,7 +9,6 @@ from rest_framework.views import APIView
 from apps.orders.models import Order
 from apps.orders.tasks import send_order_confirmation_email
 from apps.users.throttles import PaymentRateThrottle
-from config.settings import base as settings
 
 from .models import Payment
 from .serializers import CreatePaymentRequestSerializer, LiqPayCallbackSerializer

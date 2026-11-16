@@ -2,9 +2,8 @@ import base64
 import hashlib
 import json
 
+from django.conf import settings
 from rest_framework.exceptions import APIException
-
-from config.settings import base as settings
 
 
 class LiqPayAPIError(APIException):
