@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "django_filters",
     "corsheaders",
+    "django_celery_beat",
     "apps.products.apps.ProductsConfig",
     "apps.users.apps.UsersConfig",
     "apps.cart.apps.CartConfig",
@@ -170,6 +171,7 @@ AUTH_USER_MODEL = "users.User"
 
 # Email налаштування
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_TIMEOUT = 5
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
